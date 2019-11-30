@@ -1,13 +1,13 @@
-export default {
+import { isUndefined, isFunction, isObject } from './utils';
+import componentStyle from './component-style';
+
+export default (options = {}) => ({
   computed: {
     $style () {
       return this._style
     }
   },
   beforeCreate() {
-    const isObject = x => typeof x === 'object' && x !== null && x.toString() === '[object Object]'
-    const isFunction = x => typeof x === 'function'
-    const isUndefined = x => typeof x === 'undefined'
     const value = this.$options.style
 
     if (isUndefined(value)) {
@@ -16,7 +16,8 @@ export default {
       const res = value.call(this)
       if (isObject(res)) {
         // calculate
-        this._style = res
+        // options.head
+        this._style = componentStyle(res, options.head || [])
       } else {
         // style is passed and it's function, but return value is not object
         throw new Error('VueComponentStyle: \'style\' function in component should returns array!')
@@ -26,4 +27,4 @@ export default {
       throw new Error('VueComponentStyle: \'style\' key in component isn\'t function!')
     }
   }
-}
+})
