@@ -19,5 +19,6 @@ module.exports = {
     'vue',
   ],
   rules: {
+    'import/no-unresolved': 'off'
   },
 };
