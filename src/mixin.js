@@ -2,29 +2,35 @@ import { isUndefined, isFunction, isObject } from './utils';
 import componentStyle from './component-style';
 
 export default (options = {}) => ({
-  computed: {
-    $style () {
-      return this._style
+  created() {
+    this.$calcStyle()
+  },
+  methods: {
+    $calcStyle() {
+      const propValue = this.$options.style
+      if (isFunction(propValue)) {
+        const value = propValue.call(this)
+        if (isObject(value)) {
+          this.$style = componentStyle(value)
+        } else {
+          // style is passed and it's function, but return value is not object
+          throw new Error('VueComponentStyle: \'style\' function in component should returns array!')
+        }
+      } else if (isUndefined(propValue)) {
+        this.$style = {}
+      } else {
+        // style is passed, but with wrong value
+        throw new Error('VueComponentStyle: \'style\' key in component isn\'t function!')
+      }
+      this.$forceUpdate()
     }
   },
-  beforeCreate() {
-    const value = this.$options.style
-
-    if (isUndefined(value)) {
-      this._style = {}
-    } else if (isFunction(value)) {
-      const res = value.call(this)
-      if (isObject(res)) {
-        // calculate
-        // options.head
-        this._style = componentStyle(res, options.head || [])
-      } else {
-        // style is passed and it's function, but return value is not object
-        throw new Error('VueComponentStyle: \'style\' function in component should returns array!')
+  watch: {
+    $data: {
+      deep: true,
+      handler() {
+        this.$calcStyle()
       }
-    } else {
-      // style is passed, but with wrong value
-      throw new Error('VueComponentStyle: \'style\' key in component isn\'t function!')
     }
   }
 })
