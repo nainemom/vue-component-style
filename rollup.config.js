@@ -1,21 +1,21 @@
-import { terser } from 'rollup-plugin-terser'
+import { terser } from 'rollup-plugin-terser';
 
 function generateConfig(format, minify) {
-  const nameFormat = format === 'umd' ? '' : `.${format}`
-  const nameMinfy = minify && format === 'umd' ? '.min' : ''
-  const plugins = []
+  const nameFormat = format === 'umd' ? '' : `.${format}`;
+  const nameMinfy = minify && format === 'umd' ? '.min' : '';
+  const plugins = [];
   if (minify) {
-    plugins.push(terser())
+    plugins.push(terser());
   }
   return {
     input: 'src/index.js',
     output: {
       file: `dist/vue-component-style${nameFormat}${nameMinfy}.js`,
       name: 'VueComponentStyle',
-      format
+      format,
     },
-    plugins
-  }
+    plugins,
+  };
 }
 module.exports = [
   generateConfig('umd', true),

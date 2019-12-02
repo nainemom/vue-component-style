@@ -1,8 +1,8 @@
 import path from 'path';
 
-export default function VueComponentStyle () {
+export default function VueComponentStyle() {
   // Write your code here
   this.addPlugin({
-    src: path.resolve(__dirname, 'plugin.js')
-  })
+    src: path.resolve(__dirname, 'plugin.js'),
+  });
 }

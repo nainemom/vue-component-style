@@ -1,32 +1,32 @@
-export function dashCase (c) {
-  let ret = ''
-  for (let i = 0; i < c.length; i++) {
+export function dashCase(c) {
+  let ret = '';
+  for (let i = 0; i < c.length; i += 1) {
     if (i > 0 && /[A-Z]/.test(c[i])) {
-      ret += '-'
+      ret += '-';
     }
-    ret += c[i].toLowerCase()
+    ret += c[i].toLowerCase();
   }
-  return ret
+  return ret;
 }
 
-export function objToArr (obj, cb) {
-  Object.keys(obj).forEach(key => {
-    cb(key, obj[key])
-  })
+export function objToArr(obj, cb) {
+  Object.keys(obj).forEach((key) => {
+    cb(key, obj[key]);
+  });
 }
 
 export function isObject(x) {
-  return typeof x === 'object' && x !== null && x.toString() === '[object Object]'
+  return typeof x === 'object' && x !== null && x.toString() === '[object Object]';
 }
 
 export function isFunction(x) {
-  return typeof x === 'function'
+  return typeof x === 'function';
 }
 
 export function isUndefined(x) {
-  return typeof x === 'undefined'
+  return typeof x === 'undefined';
 }
 
 export function makeError(msg) {
-  throw new Error(`[VueComponentStyle] ${msg}`)
+  throw new Error(`[VueComponentStyle] ${msg}`);
 }

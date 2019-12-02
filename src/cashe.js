@@ -1,29 +1,24 @@
 export default new (class {
-  constructor () {
+  constructor() {
     this.cache = [];
   }
 
-  add (name, hash) {
+  add(name, hash) {
     this.cache.push({
       name,
       hash,
-    })
+    });
   }
 
-  get (value, key = 'hash') {
-    return this.cache.find(x => x[key] === value)
+  get(value, key = 'hash') {
+    return this.cache.find((x) => x[key] === value);
   }
 
-  name (prefix) {
-    let i = 1
+  name(prefix) {
+    let i = 1;
     while (this.get(`${prefix}-${i}`, 'name')) {
-      i++
+      i += 1;
     }
-    return `${prefix}-${i}`
+    return `${prefix}-${i}`;
   }
-
-  hash (v) {
-    return JSON.stringify(v)
-  }
-
-})
+})();
