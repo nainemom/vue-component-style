@@ -24,7 +24,7 @@ function mountComponent(component, options = {}) {
 }
 
 
-$test('Test bundles as module', () => {
+$test('Bundles exports', () => {
   const cjs = require('../dist/vue-component-style.cjs'); // eslint-disable-line global-require
   const umd = require('../dist/vue-component-style'); // eslint-disable-line global-require
 
@@ -33,7 +33,7 @@ $test('Test bundles as module', () => {
   $expect(umd).toHaveProperty('install');
 });
 
-$test('Test if can apply static style', () => {
+$test('Can apply static style', () => {
   const wrapper = mountComponent({
     template: '<div :class="$style.a"></div>',
     style() {
@@ -47,7 +47,7 @@ $test('Test if can apply static style', () => {
   $expect(window.getComputedStyle(wrapper.element).color).toEqual('red');
 });
 
-$test('Test if can apply dynamic style', () => {
+$test('Can apply dynamic style', () => {
   const component = {
     props: ['color'],
     template: '<div :class="$style.$b"></div>',
@@ -75,7 +75,7 @@ $test('Test if can apply dynamic style', () => {
 });
 
 
-$test('Test if can handle changes durring runtime', () => {
+$test('Can handle changes durring runtime', () => {
   const wrapper = mountComponent({
     props: ['color'],
     template: '<div :class="$style.a"></div>',
@@ -104,7 +104,7 @@ $test('Test if can handle changes durring runtime', () => {
   });
 });
 
-$test('Test if can map already generated style to new element', () => {
+$test('Can map already generated style to new element', () => {
   const wrapper1 = mountComponent({
     template: '<h1 :class="$style.a">H1</h1>',
     style() {
