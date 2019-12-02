@@ -25,10 +25,19 @@ export default () => ({
         makeError('\'style\' key in component isn\'t function!');
       }
       this.$forceUpdate();
+      this.$nextTick(() => {
+        this.$emit('styleChange', this.$style);
+      });
     },
   },
   watch: {
     $data: {
+      deep: true,
+      handler() {
+        this.$calcStyle();
+      },
+    },
+    $props: {
       deep: true,
       handler() {
         this.$calcStyle();
