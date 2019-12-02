@@ -25,8 +25,10 @@ export default () => ({
         makeError('\'style\' key in component isn\'t function!');
       }
       this.$forceUpdate();
-      this.$nextTick(() => {
-        this.$emit('styleChange', this.$style);
+      this.$nextTick(() => { // wait until component-style new class-names applied to component
+        setTimeout(() => { // wait until component-style updates global style tag
+          this.$emit('styleChange', this.$style);
+        });
       });
     },
   },
