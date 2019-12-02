@@ -10,11 +10,9 @@ export function dashCase (c) {
 }
 
 export function objToArr (obj, cb) {
-  const ret = []
   Object.keys(obj).forEach(key => {
-    ret.push(cb(key, obj[key]))
+    cb(key, obj[key])
   })
-  return ret
 }
 
 export function isObject(x) {
