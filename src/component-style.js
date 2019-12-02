@@ -25,24 +25,41 @@ function objectToCss (selector, style) {
   return ret
 }
 
-export default function (classes, head = []) {
-  let ret = {}
+function styleTag(className = '') {
+  const key = 'data-vcs-class'
+  const doc = document
+  let el = doc.querySelector(`style[${key}="${className}"]`)
+  if (!el) {
+    el = doc.createElement('style')
+    el.setAttribute(key, className)
+    el.setAttribute('type', 'text/css')
+    doc.head.appendChild(el)
+  }
+  return el
+}
+
+export default function (classes) {
+  const ret = {}
   objToArr(classes, (name, content) => {
     const hash = cache.hash(content);
-    const cached = cache.get(hash, 'hash')
-    if (cached) {
-      ret[name] = [cached.name]
+    const isDynamic = name.indexOf('$') === 0
+    const style = styleTag(name)
+    if (isDynamic) {
+      const cached = cache.get(hash, 'hash')
+      if (cached) {
+        ret[name] = [cached.name]
+      } else {
+        const generatedName = cache.name(name.substr(1));
+        const cssContent = objectToCss(`.${generatedName}`, content);
+        cache.add(generatedName, hash);
+        style.innerHTML += cssContent
+        ret[name] = [generatedName]
+      }
     } else {
-      const generatedName = cache.name(name);
-      const cssContent = objectToCss(`.${generatedName}`, content);
-      cache.add(generatedName, hash);
-      head.style.push({
-        type: 'text/css',
-        innerHTML: cssContent,
-        'data-x': 'salam'
-      })
-      ret[name] = [generatedName]
-      // now use cssContent
+      const cssContent = objectToCss(`.${name}`, content);
+      cache.add(name, hash);
+      style.innerHTML = cssContent
+      ret[name] = [name]
     }
   })
 
