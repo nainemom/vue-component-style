@@ -26,3 +26,7 @@ export function isFunction(x) {
 export function isUndefined(x) {
   return typeof x === 'undefined'
 }
+
+export function makeError(msg) {
+  throw new Error(`[VueComponentStyle] ${msg}`)
+}

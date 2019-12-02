@@ -1,4 +1,4 @@
-import { isUndefined, isFunction, isObject } from './utils';
+import { isUndefined, isFunction, isObject, makeError } from './utils';
 import componentStyle from './component-style';
 
 export default (options = {}) => ({
@@ -14,13 +14,13 @@ export default (options = {}) => ({
           this.$style = componentStyle(value)
         } else {
           // style is passed and it's function, but return value is not object
-          throw new Error('VueComponentStyle: \'style\' function in component should returns object!')
+          makeError('\'style\' function in component should returns object!')
         }
       } else if (isUndefined(propValue)) {
         this.$style = {}
       } else {
         // style is passed, but with wrong value
-        throw new Error('VueComponentStyle: \'style\' key in component isn\'t function!')
+        makeError('\'style\' key in component isn\'t function!')
       }
       this.$forceUpdate()
     }
