@@ -14,7 +14,7 @@ export default (options = {}) => ({
           this.$style = componentStyle(value)
         } else {
           // style is passed and it's function, but return value is not object
-          throw new Error('VueComponentStyle: \'style\' function in component should returns array!')
+          throw new Error('VueComponentStyle: \'style\' function in component should returns object!')
         }
       } else if (isUndefined(propValue)) {
         this.$style = {}
