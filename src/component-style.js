@@ -25,25 +25,42 @@ function objectToCss(selector, style) {
   return ret;
 }
 
-function styleTag(className = '') {
+function applyStyle(name, content, append, options) {
   const key = 'data-vcs-class';
-  const doc = document;
-  let el = doc.querySelector(`style[${key}="${className}"]`);
-  if (!el) {
-    el = doc.createElement('style');
-    el.setAttribute(key, className);
-    el.setAttribute('type', 'text/css');
-    doc.head.appendChild(el);
+  if (options.headObject) {
+    let index = options.headObject.style.findIndex((x) => x[key] === name && x[key].innerHTML !== '');
+    if (index === -1) {
+      console.log('one new thing');
+      index = options.headObject.style.push({
+        [key]: name,
+        rel: 'stylesheet',
+        innerHTML: content,
+      }) - 1;
+    } else {
+      console.log('one old thing with append', append);
+      const item = options.headObject.style[index];
+      item.innerHTML = (append ? item.innerHTML : '') + content;
+    }
+    console.log('inserted to headObject', options.headObject.style);
   }
-  return el;
+  if (options.documentObject) {
+    const doc = document;
+    let el = doc.querySelector(`style[${key}="${name}"]`);
+    if (!el) {
+      el = doc.createElement('style');
+      el.setAttribute(key, name);
+      el.setAttribute('type', 'text/css');
+      doc.head.appendChild(el);
+    }
+    // el.innerHTML = (append ? el.innerHTML : '') + content;
+  }
 }
 
-export default function (classes) {
+export default function (classes, options) {
   const ret = {};
   objToArr(classes, (name, content) => {
     const hash = JSON.stringify(content);
     const isDynamic = name.indexOf('$') === 0;
-    const style = styleTag(name);
     if (isDynamic) {
       const cached = cache.get(hash, 'hash');
       if (cached) {
@@ -52,13 +69,13 @@ export default function (classes) {
         const generatedName = cache.name(name.substr(1));
         const cssContent = objectToCss(`.${generatedName}`, content);
         cache.add(generatedName, hash);
-        style.innerHTML += cssContent;
+        applyStyle(name, cssContent, true, options);
         ret[name] = [generatedName];
       }
     } else {
       const cssContent = objectToCss(`.${name}`, content);
       cache.add(name, hash);
-      style.innerHTML = cssContent;
+      applyStyle(name, cssContent, false, options);
       ret[name] = [name];
     }
   });

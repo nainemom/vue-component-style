@@ -3,7 +3,7 @@ import {
 } from './utils';
 import componentStyle from './component-style';
 
-export default () => ({
+export default (options) => ({
   created() {
     this.$calcStyle();
   },
@@ -13,7 +13,7 @@ export default () => ({
       if (isFunction(propValue)) {
         const value = propValue.call(this);
         if (isObject(value)) {
-          this.$style = componentStyle(value);
+          this.$style = componentStyle(value, options);
         } else {
           // style is passed and it's function, but return value is not object
           makeError('\'style\' function in component should returns object!');
