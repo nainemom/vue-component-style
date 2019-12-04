@@ -1,52 +1,36 @@
 import {
   isUndefined, isFunction, isObject, makeError, hashCode,
 } from './utils';
-import { createStylesheet, componentCss } from './style';
+import { injectStylesheet, deleteStylesheet, componentCss } from './style';
 
 export default {
   created() {
     this.$calcStyle();
   },
   methods: {
-    $calcStyle(styleSsrArray = undefined) {
-      const isServer = typeof process !== 'undefined' && !process.client;
-      const isClient = typeof document !== 'undefined';
-      const propValue = this.$options.style;
-      // remove old stylesheet if found
+    $calcStyle() {
+      const documentObject = typeof document !== 'undefined' ? document : undefined;
       // eslint-disable-next-line no-underscore-dangle
-      const lastVcsid = ((this.$style || {})._vcsid || false);
-      if (lastVcsid && isClient) {
-        const lastStylesheet = document.querySelector(`style[data-vcsid="${lastVcsid}"]`);
-        if (lastStylesheet) {
-          lastStylesheet.remove();
-        }
+      const ssrAppObject = this._ssrAppObject;
+      const vcsLastId = this.$vcsLastId;
+      const propValue = this.$options.style;
+      // delete old stylesheet if found
+      // eslint-disable-next-line no-underscore-dangle
+      if (!isUndefined(vcsLastId)) {
+        deleteStylesheet(vcsLastId, documentObject, ssrAppObject);
       }
+
       if (isFunction(propValue)) {
         const value = propValue.call(this);
-        // oh men
-        const vcsid = hashCode(JSON.stringify(value));
+        const vcsId = hashCode(JSON.stringify(value));
         if (!isObject(value)) {
           // style is passed and it's function, but return value is not object
           makeError('\'style\' function in component should returns object!');
         }
-        const css = componentCss(vcsid, value);
-        const stylesheet = createStylesheet(
-          vcsid,
-          css.content,
-          !isClient || (isServer && !isUndefined(styleSsrArray)),
-        );
-        if (isServer && typeof styleSsrArray !== 'undefined') {
-          /* TODO: make it works on ssr */
-          styleSsrArray.push(stylesheet);
-        }
-        if (isClient) {
-          document.head.appendChild(stylesheet);
-        }
-        this.$style = {
-          ...css.maps,
-          // eslint-disable-next-line no-undef
-          _vcsid: vcsid,
-        };
+        const css = componentCss(vcsId, value);
+        injectStylesheet(vcsId, css.content, documentObject, ssrAppObject);
+        this.$style = css.maps;
+        this.$vcsLastId = vcsId;
       } else if (isUndefined(propValue)) {
         this.$style = {};
       } else {
