@@ -25,24 +25,22 @@ export default {
         const vcsId = hashCode(JSON.stringify(value));
         if (!isObject(value)) {
           // style is passed and it's function, but return value is not object
-          makeError('\'style\' function in component should returns object!');
+          makeError('\'style\' function should returns object!');
         }
         const css = componentCss(vcsId, value);
         injectStylesheet(vcsId, css.content, documentObject, ssrAppObject);
         this.$style = css.maps;
         this.$vcsLastId = vcsId;
-      } else if (isUndefined(propValue)) {
-        this.$style = {};
-      } else {
-        // style is passed, but with wrong value
-        makeError('\'style\' key in component isn\'t function!');
-      }
-      this.$forceUpdate();
-      this.$nextTick(() => { // wait until component-style new class-names applied to component
-        setTimeout(() => { // wait until component-style updates global style tag
-          this.$emit('styleChange', this.$style);
+        this.$forceUpdate();
+        this.$nextTick(() => { // wait until component-style new class-names applied to component
+          setTimeout(() => { // wait until component-style updates global style tag
+            this.$emit('styleChange', this.$style);
+          });
         });
-      });
+      } else if (!isUndefined(propValue)) {
+        // style is passed, but with wrong value
+        makeError('\'style\' should be function!');
+      }
     },
   },
   watch: {
