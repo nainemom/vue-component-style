@@ -1,5 +1,8 @@
 import { dashCase, objToArr } from './utils';
 
+const STYLESHEET_ID_KEY = 'data-vcs-id';
+const STYLESHEET_TYPE = 'text/css';
+
 function objectToCss(selector, style) {
   let ret = '';
   const nexts = [];
@@ -24,31 +27,56 @@ function objectToCss(selector, style) {
   return ret;
 }
 
-function calcClassName(componentId, objectName) {
-  return dashCase(`vcs-${componentId}-${objectName}`);
+function calcClassName(id, objectName) {
+  return dashCase(`vcs-${id}-${objectName}`);
 }
 
-export function createStylesheet(componentId, content, isServer) {
-  const item = {
-    type: 'text/css',
-    'data-vcsid': componentId,
-    innerHTML: content,
-  };
-  if (isServer) {
-    return item;
+export function injectStylesheet(
+  id,
+  innerHTML,
+  documentObject = undefined,
+  ssrAppObject = undefined,
+) {
+  if (typeof documentObject !== 'undefined') {
+    const el = documentObject.querySelector(`style[${STYLESHEET_ID_KEY}="${id}"]`) || documentObject.createElement('style');
+    el.setAttribute(STYLESHEET_ID_KEY, id);
+    el.type = STYLESHEET_TYPE;
+    el.innerHTML = innerHTML;
+    documentObject.head.appendChild(el);
+  } else if (typeof ssrAppObject !== 'undefined') {
+    const oldEl = ssrAppObject.head.style.find((x) => x[STYLESHEET_ID_KEY] === id);
+    if (oldEl) {
+      oldEl.innerHTML = innerHTML;
+    } else {
+      ssrAppObject.head.style.push({
+        [STYLESHEET_ID_KEY]: id,
+        type: STYLESHEET_TYPE,
+        innerHTML,
+      });
+    }
   }
-  const el = document.querySelector(`style[data-vcsid="${item['data-vcsid']}"]`) || document.createElement('style');
-  el.setAttribute('data-vcsid', componentId);
-  el.type = item.type;
-  el.innerHTML = item.innerHTML;
-  return el;
+  return id;
 }
 
-export function componentCss(componentId, classesObject) {
+export function deleteStylesheet(id, documentObject, ssrAppObject) {
+  if (typeof documentObject !== 'undefined') {
+    const el = documentObject.querySelector(`style[${STYLESHEET_ID_KEY}="${id}"]`);
+    if (el) {
+      el.remove();
+    }
+  } else if (typeof ssrAppObject !== 'undefined') {
+    const index = ssrAppObject.head.style.findIndex((x) => x[STYLESHEET_ID_KEY] === id);
+    if (index !== -1) {
+      ssrAppObject.splice(index, 1);
+    }
+  }
+}
+
+export function componentCss(id, classesObject) {
   let content = '';
   const maps = {};
   objToArr(classesObject, (objectName, objectContent) => {
-    const className = calcClassName(componentId, objectName);
+    const className = calcClassName(id, objectName);
     maps[objectName] = className;
     content += objectToCss(`.${className}`, objectContent);
   });
