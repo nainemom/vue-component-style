@@ -1,23 +1,51 @@
 import {
-  isUndefined, isFunction, isObject, makeError,
+  isUndefined, isFunction, isObject, makeError, hashCode,
 } from './utils';
-import componentStyle from './component-style';
+import { createStylesheet, componentCss } from './style';
 
-export default (options) => ({
+export default {
   created() {
     this.$calcStyle();
   },
   methods: {
-    $calcStyle() {
+    $calcStyle(styleSsrArray = undefined) {
+      const isServer = typeof process !== 'undefined' && !process.client;
       const propValue = this.$options.style;
+      // remove old stylesheet if found
+      // eslint-disable-next-line no-underscore-dangle
+      const lastVcsid = ((this.$style || {})._vcsid || false);
+      if (lastVcsid && typeof document !== 'undefined') {
+        const lastStylesheet = document.querySelector(`style[data-vcsid="${lastVcsid}"]`);
+        if (lastStylesheet) {
+          document.removeChild(lastStylesheet);
+        }
+      }
       if (isFunction(propValue)) {
         const value = propValue.call(this);
-        if (isObject(value)) {
-          this.$style = componentStyle(value, options);
-        } else {
+        // oh men
+        const vcsid = hashCode(JSON.stringify(value));
+        if (!isObject(value)) {
           // style is passed and it's function, but return value is not object
           makeError('\'style\' function in component should returns object!');
         }
+        const css = componentCss(vcsid, value);
+        const stylesheet = createStylesheet(
+          vcsid,
+          css.content,
+          isServer && !isUndefined(styleSsrArray),
+        );
+        if (isServer && typeof styleSsrArray !== 'undefined') {
+          /* TODO: make it works on ssr */
+          styleSsrArray.push(stylesheet);
+        }
+        if (typeof document !== 'undefined') {
+          document.head.appendChild(stylesheet);
+        }
+        this.$style = {
+          ...css.maps,
+          // eslint-disable-next-line no-undef
+          _vcsid: vcsid,
+        };
       } else if (isUndefined(propValue)) {
         this.$style = {};
       } else {
@@ -46,4 +74,4 @@ export default (options) => ({
       },
     },
   },
-});
+};
