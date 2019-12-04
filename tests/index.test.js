@@ -50,10 +50,10 @@ $test('Can apply static style', () => {
 $test('Can apply dynamic style', () => {
   const component = {
     props: ['color'],
-    template: '<div :class="$style.$b"></div>',
+    template: '<div :class="$style.scopedTest"></div>',
     style() {
       return {
-        $b: {
+        scopedTest: {
           backgroundColor: this.color,
         },
       };
@@ -102,28 +102,4 @@ $test('Can handle changes durring runtime', () => {
       resolve();
     });
   });
-});
-
-$test('Can map already generated style to new element', () => {
-  const wrapper1 = mountComponent({
-    template: '<h1 :class="$style.a">H1</h1>',
-    style() {
-      return {
-        a: {
-          color: 'red',
-        },
-      };
-    },
-  });
-  const wrapper2 = mountComponent({
-    template: '<h2 :class="$style.a">H2</h2>',
-    style() {
-      return {
-        a: {
-          color: 'red',
-        },
-      };
-    },
-  });
-  $expect(wrapper1.element.className).toEqual(wrapper2.element.className);
 });
