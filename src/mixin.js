@@ -1,23 +1,36 @@
 import {
-  isUndefined, isFunction, isObject, makeError,
+  isUndefined, isFunction, isObject, makeError, hashCode,
 } from './utils';
-import componentStyle from './component-style';
+import { injectStylesheet, deleteStylesheet, componentCss } from './style';
 
-export default () => ({
+export default {
   created() {
     this.$calcStyle();
   },
   methods: {
     $calcStyle() {
+      const documentObject = typeof document !== 'undefined' ? document : undefined;
+      // eslint-disable-next-line no-underscore-dangle
+      const ssrAppObject = this._ssrAppObject;
+      const vcsLastId = this.$vcsLastId;
       const propValue = this.$options.style;
+      // delete old stylesheet if found
+      // eslint-disable-next-line no-underscore-dangle
+      if (!isUndefined(vcsLastId)) {
+        deleteStylesheet(vcsLastId, documentObject, ssrAppObject);
+      }
+
       if (isFunction(propValue)) {
         const value = propValue.call(this);
-        if (isObject(value)) {
-          this.$style = componentStyle(value);
-        } else {
+        const vcsId = hashCode(JSON.stringify(value));
+        if (!isObject(value)) {
           // style is passed and it's function, but return value is not object
           makeError('\'style\' function in component should returns object!');
         }
+        const css = componentCss(vcsId, value);
+        injectStylesheet(vcsId, css.content, documentObject, ssrAppObject);
+        this.$style = css.maps;
+        this.$vcsLastId = vcsId;
       } else if (isUndefined(propValue)) {
         this.$style = {};
       } else {
@@ -46,4 +59,4 @@ export default () => ({
       },
     },
   },
-});
+};

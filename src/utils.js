@@ -30,3 +30,9 @@ export function isUndefined(x) {
 export function makeError(msg) {
   throw new Error(`[VueComponentStyle] ${msg}`);
 }
+
+// https://stackoverflow.com/a/34842797
+export function hashCode(str) {
+  // eslint-disable-next-line no-bitwise
+  return str.split('').reduce((a, b) => (((a << 5) - a) + b.charCodeAt(0)) | 0, 0);
+}
