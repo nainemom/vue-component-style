@@ -10,14 +10,15 @@ export default {
   methods: {
     $calcStyle(styleSsrArray = undefined) {
       const isServer = typeof process !== 'undefined' && !process.client;
+      const isClient = typeof document !== 'undefined';
       const propValue = this.$options.style;
       // remove old stylesheet if found
       // eslint-disable-next-line no-underscore-dangle
       const lastVcsid = ((this.$style || {})._vcsid || false);
-      if (lastVcsid && typeof document !== 'undefined') {
+      if (lastVcsid && isClient) {
         const lastStylesheet = document.querySelector(`style[data-vcsid="${lastVcsid}"]`);
         if (lastStylesheet) {
-          document.removeChild(lastStylesheet);
+          lastStylesheet.remove();
         }
       }
       if (isFunction(propValue)) {
@@ -32,13 +33,13 @@ export default {
         const stylesheet = createStylesheet(
           vcsid,
           css.content,
-          isServer && !isUndefined(styleSsrArray),
+          !isClient || (isServer && !isUndefined(styleSsrArray)),
         );
         if (isServer && typeof styleSsrArray !== 'undefined') {
           /* TODO: make it works on ssr */
           styleSsrArray.push(stylesheet);
         }
-        if (typeof document !== 'undefined') {
+        if (isClient) {
           document.head.appendChild(stylesheet);
         }
         this.$style = {
