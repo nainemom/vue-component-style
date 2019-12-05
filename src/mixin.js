@@ -10,12 +10,10 @@ export default {
   methods: {
     $calcStyle() {
       const documentObject = typeof document !== 'undefined' ? document : undefined;
-      // eslint-disable-next-line no-underscore-dangle
       const ssrAppObject = this._ssrAppObject;
       const vcsLastId = this.$vcsLastId;
       const propValue = this.$options.style;
       // delete old stylesheet if found
-      // eslint-disable-next-line no-underscore-dangle
       if (!isUndefined(vcsLastId)) {
         deleteStylesheet(vcsLastId, documentObject, ssrAppObject);
       }
