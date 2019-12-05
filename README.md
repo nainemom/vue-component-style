@@ -86,7 +86,7 @@ export default {
       },
       content: {
         marginBottom: `${this.size}px`,
-        '& > link': {
+        '& > a': {
           backgroundColor: this.color,
         }
       }
