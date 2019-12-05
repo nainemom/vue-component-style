@@ -9,9 +9,10 @@ A `Vue` mixin to add `style` section in components with `Javascript` syntax.
 - Zero Dependency
 - Tiny (~1kb gzipped)
 - Simple Setup and Usage
-- Nested Support.
-- :pseudo Selector Support.
+- Nested Support
+- Pseudo Selector Support
 - SSR Support
+- Scoped to Component
 
 ---
 
