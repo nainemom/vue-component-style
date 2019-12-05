@@ -9,7 +9,7 @@ function objectToCss(selector, style) {
   ret += `${selector}{`;
   objToArr(style, (key, value) => {
     const prop = dashCase(key);
-    if (prop.includes('&')) {
+    if (prop[0] === '&') {
       // nested
       const arrProp = Array.isArray(prop) ? prop : [prop];
       const newSelector = arrProp.map((x) => x.split('&').join(selector)).join(',');
@@ -20,16 +20,11 @@ function objectToCss(selector, style) {
       ret += `${prop}:${value};`;
     }
   });
-  ret += '}';
-  nexts.forEach((nextRet) => {
-    ret += nextRet;
-  });
+  ret += `}${nexts.join('')}`;
   return ret;
 }
 
-function calcClassName(id, objectName) {
-  return dashCase(`vcs-${id}-${objectName}`);
-}
+const calcClassName = (id, objectName) => dashCase(`vcs-${id}-${objectName}`);
 
 export function injectStylesheet(
   id,
