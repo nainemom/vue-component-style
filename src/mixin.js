@@ -11,24 +11,24 @@ export default {
     $calcStyle() {
       const documentObject = typeof document !== 'undefined' ? document : undefined;
       const ssrAppObject = this._ssrAppObject;
-      const vcsLastId = this.$vcsLastId;
+      const lastStyleId = this.$lastStyleId;
       const propValue = this.$options.style;
       // delete old stylesheet if found
-      if (!isUndefined(vcsLastId)) {
-        deleteStylesheet(vcsLastId, documentObject, ssrAppObject);
+      if (!isUndefined(lastStyleId)) {
+        deleteStylesheet(lastStyleId, documentObject, ssrAppObject);
       }
 
       if (isFunction(propValue)) {
         const value = propValue.call(this);
-        const vcsId = hashCode(JSON.stringify(value));
+        const styleId = hashCode(JSON.stringify(value));
         if (!isObject(value)) {
           // style is passed and it's function, but return value is not object
           makeError('\'style\' function should returns object!');
         }
-        const css = componentCss(vcsId, value);
-        injectStylesheet(vcsId, css.content, documentObject, ssrAppObject);
+        const css = componentCss(styleId, value);
+        injectStylesheet(styleId, css.content, documentObject, ssrAppObject);
         this.$style = css.maps;
-        this.$vcsLastId = vcsId;
+        this.$lastStyleId = styleId;
         this.$forceUpdate();
         this.$nextTick(() => { // wait until component-style new class-names applied to component
           setTimeout(() => { // wait until component-style updates global style tag
