@@ -59,7 +59,7 @@ _component.vue_:
   <div>
     <h1 :class="$style.title"> Title </h1>
     <div :class="$style.content">
-      Content <a> Link </b>
+      Content <a> Link </a>
     </div>
   </div>
 </template>
