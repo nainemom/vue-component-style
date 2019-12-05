@@ -1,6 +1,6 @@
 # Vue Component Style
 
-A `Vue` mixin to add `style` section in components to inject `Javascript` in your styles.
+A `Vue` mixin to add `style` section in components with `Javascript` syntax.
 
 ---
 
@@ -88,6 +88,9 @@ export default {
         marginBottom: `${this.size}px`,
         '& > a': {
           backgroundColor: this.color,
+          '&:visited': {
+            backgroundColor: 'transparent',
+          }
         }
       }
     }
