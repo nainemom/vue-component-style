@@ -1,5 +1,5 @@
 import {
-  isUndefined, isFunction, isObject, makeError, hashCode,
+  typeOf, makeError, hashCode,
 } from './utils';
 import { injectStylesheet, deleteStylesheet, componentCss } from './style';
 
@@ -14,14 +14,14 @@ export default {
       const lastStyleId = this.$lastStyleId;
       const propValue = this.$options.style;
       // delete old stylesheet if found
-      if (!isUndefined(lastStyleId)) {
+      if (typeOf(lastStyleId) !== 'Undefined') {
         deleteStylesheet(lastStyleId, documentObject, ssrAppObject);
       }
 
-      if (isFunction(propValue)) {
+      if (typeOf(propValue) === 'Function') {
         const value = propValue.call(this);
         const styleId = hashCode(JSON.stringify(value));
-        if (!isObject(value)) {
+        if (typeOf(value) !== 'Object') {
           // style is passed and it's function, but return value is not object
           makeError('\'style\' function should returns object!');
         }
@@ -35,7 +35,7 @@ export default {
             this.$emit('styleChange', this.$style);
           });
         });
-      } else if (!isUndefined(propValue)) {
+      } else if (typeOf(propValue) !== 'Undefined') {
         // style is passed, but with wrong value
         makeError('\'style\' should be function!');
       }

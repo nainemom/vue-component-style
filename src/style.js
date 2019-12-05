@@ -1,4 +1,4 @@
-import { dashCase, objToArr } from './utils';
+import { dashCase, objToArr, typeOf } from './utils';
 
 const STYLESHEET_ID_KEY = 'data-vcs-id';
 const STYLESHEET_TYPE = 'text/css';
@@ -11,7 +11,7 @@ function objectToCss(selector, style) {
     const prop = dashCase(key);
     if (prop[0] === '&') {
       // nested
-      const arrProp = Array.isArray(prop) ? prop : [prop];
+      const arrProp = typeOf(prop) === 'Array' ? prop : [prop];
       const newSelector = arrProp.map((x) => x.split('&').join(selector)).join(',');
       nexts.push(
         objectToCss(newSelector, value),
