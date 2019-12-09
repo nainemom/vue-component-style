@@ -36,12 +36,12 @@ $test('Bundles exports', () => {
 $test('Can apply static style', () => {
   const wrapper = mountComponent({
     template: '<div :class="$style.a"></div>',
-    style() {
-      return {
-        a: {
+    style({ className }) {
+      return [
+        className('a', {
           color: 'red',
-        },
-      };
+        }),
+      ];
     },
   });
   $expect(window.getComputedStyle(wrapper.element).color).toEqual('red');
@@ -51,12 +51,12 @@ $test('Can apply dynamic style', () => {
   const component = {
     props: ['color'],
     template: '<div :class="$style.scopedTest"></div>',
-    style() {
-      return {
-        scopedTest: {
+    style({ className }) {
+      return [
+        className('scopedTest', {
           backgroundColor: this.color,
-        },
-      };
+        }),
+      ];
     },
   };
   const wrapper1 = mountComponent(component, {
@@ -79,12 +79,12 @@ $test('Can handle changes durring runtime', () => {
   const wrapper = mountComponent({
     props: ['color'],
     template: '<div :class="$style.a"></div>',
-    style() {
-      return {
-        a: {
+    style({ className }) {
+      return [
+        className('a', {
           backgroundColor: this.color,
-        },
-      };
+        }),
+      ];
     },
   }, {
     propsData: {

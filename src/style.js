@@ -1,30 +1,73 @@
-import { dashCase, objToArr, typeOf } from './utils';
+import { dashCase, typeOf, each } from './utils';
 
 const STYLESHEET_ID_KEY = 'data-vcs-id';
 const STYLESHEET_TYPE = 'text/css';
 
-function objectToCss(selector, style) {
-  let ret = '';
-  const nexts = [];
-  ret += `${selector}{`;
-  objToArr(style, (key, value) => {
-    const prop = dashCase(key);
-    if (prop[0] === '&') {
-      // nested
-      const arrProp = typeOf(prop) === 'Array' ? prop : [prop];
-      const newSelector = arrProp.map((x) => x.split('&').join(selector)).join(',');
-      nexts.push(
-        objectToCss(newSelector, value),
-      );
+const generateName = (id, name) => dashCase(`vcs-${id}-${name}`);
+
+/*
+gives
+name, { color: 'red', '& > x': { color:'blue }}
+returns
+name { color: 'red' } name > x { color: 'blue' }
+*/
+const objectToCss = (selector, object) => {
+  const ret = [`${selector} {`, '}'];
+  let pointer = 1;
+  each(object, (key, value) => {
+    if (typeOf(value) === 'Object') { // nested
+      ret.push(objectToCss(key.split('&').join(selector), value));
     } else {
-      ret += `${prop}:${value};`;
+      ret.splice(pointer, 0, `${dashCase(key)}:${value};`);
+      pointer += 1;
     }
   });
-  ret += `}${nexts.join('')}`;
-  return ret;
-}
+  return ret.join('');
+};
 
-const calcClassName = (id, objectName) => dashCase(`vcs-${id}-${objectName}`);
+
+export const Helper = (id) => {
+  const maps = {};
+  return {
+    maps,
+    className(name, content = null) {
+      const generatedName = generateName(id, name);
+      const generatedContent = objectToCss(`.${generatedName}`, content);
+      maps[name] = generatedName;
+      return generatedContent;
+    },
+    mediaQuery(mediaFeature, content = []) {
+      const mediaFeatures = (() => {
+        const ret = [];
+        each(mediaFeature, (key, value) => {
+          ret.push(`${dashCase(key)}: ${value}`);
+        });
+        return ret.join(' and ');
+      })();
+      return `@media screen and (${mediaFeatures}){${content.join(' ')}}`;
+    },
+    keyFrames(name, content = null) {
+      const generatedName = generateName(id, name);
+      maps[name] = generateName;
+      if (!content) {
+        return generatedName;
+      }
+      const ret = (() => {
+        const reti = [];
+        each(content, (key, value) => {
+          reti.push(
+            objectToCss(dashCase(key), value),
+          );
+        });
+        return reti.join(' ');
+      })();
+      return `@keyframes ${generatedName} { ${ret} }`;
+    },
+    custom(title, content) {
+      return objectToCss(dashCase(title), content);
+    },
+  };
+};
 
 export function injectStylesheet(
   id,
@@ -65,18 +108,4 @@ export function deleteStylesheet(id, documentObject, ssrAppObject) {
       ssrAppObject.splice(index, 1);
     }
   }
-}
-
-export function componentCss(id, classesObject) {
-  let content = '';
-  const maps = {};
-  objToArr(classesObject, (objectName, objectContent) => {
-    const className = calcClassName(id, objectName);
-    maps[objectName] = className;
-    content += objectToCss(`.${className}`, objectContent);
-  });
-  return {
-    content,
-    maps,
-  };
 }

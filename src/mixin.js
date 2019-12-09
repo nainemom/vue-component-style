@@ -1,7 +1,7 @@
 import {
   typeOf, makeError, hashCode,
 } from './utils';
-import { injectStylesheet, deleteStylesheet, componentCss } from './style';
+import { injectStylesheet, deleteStylesheet, Helper } from './style';
 
 export default {
   created() {
@@ -19,15 +19,16 @@ export default {
       }
 
       if (typeOf(propValue) === 'Function') {
-        const value = propValue.call(this);
-        const styleId = hashCode(JSON.stringify(value));
-        if (typeOf(value) !== 'Object') {
+        const styleId = hashCode(propValue.toString(), this.$data, JSON.stringify(this.$props));
+        const helper = Helper(styleId);
+        const value = propValue.call(this, helper);
+        if (typeOf(value) !== 'Array') {
           // style is passed and it's function, but return value is not object
-          makeError('\'style\' function should returns object!');
+          makeError('\'style\' function should returns Array!');
         }
-        const css = componentCss(styleId, value);
-        injectStylesheet(styleId, css.content, documentObject, ssrAppObject);
-        this.$style = css.maps;
+        const css = value.join('');
+        injectStylesheet(styleId, css, documentObject, ssrAppObject);
+        this.$style = helper.maps;
         this.$lastStyleId = styleId;
         this.$forceUpdate();
         this.$nextTick(() => { // wait until component-style new class-names applied to component
