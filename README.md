@@ -1,6 +1,6 @@
 # Vue Component Style
 
-A `Vue` mixin to add `style` section in components with `Javascript` syntax.
+A `Vue` mixin to add `style` section to components.
 
 ## Features
 
