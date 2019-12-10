@@ -95,23 +95,19 @@ export default {
 
 ## API Documentions
 
-### Define Style
+### 1 - Define Style
 
     Function this.style(helper)
 
 After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning an Array. This function will invoke inside of **VueComponentStyle** with [`helper`](#helper) util object.
 
----
-
-### Use Defined Styles
+### 2 - Use Defined Styles
 
     Object this.$style
 
 After you defining **style** prop in your component, all your classes defined by [`className()`](#class-name)s are accessable with **$style** computed object inside your component instance.
 
----
-
-### Notice When Styles Updated
+### 3 - Notice When Styles Updated
 
     VueEvent 'styleChange'
 
