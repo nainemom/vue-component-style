@@ -5,17 +5,11 @@ const STYLESHEET_TYPE = 'text/css';
 
 const generateName = (id, name) => dashCase(`vcs-${id}-${name}`);
 
-/*
-gives
-name, { color: 'red', '& > x': { color:'blue }}
-returns
-name { color: 'red' } name > x { color: 'blue' }
-*/
 const objectToCss = (selector, object) => {
   const ret = [`${selector} {`, '}'];
   let pointer = 1;
   each(object, (key, value) => {
-    if (typeOf(value) === 'Object') { // nested
+    if (typeOf(value) === 'Object') {
       ret.push(objectToCss(key.split('&').join(selector), value));
     } else {
       ret.splice(pointer, 0, `${dashCase(key)}:${value};`);
