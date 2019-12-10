@@ -2,8 +2,6 @@
 
 A `Vue` mixin to add `style` section in components with `Javascript` syntax.
 
----
-
 ## Features
 
 - Zero Dependency
@@ -14,8 +12,6 @@ A `Vue` mixin to add `style` section in components with `Javascript` syntax.
 - SSR Support
 - Scoped to Component
 
----
-
 ## Install
 
 ```bash
@@ -23,8 +19,6 @@ npm i vue-component-style
 # or with yarn
 yarn add vue-component-style
 ```
-
----
 
 ## Setup
 
@@ -42,17 +36,13 @@ Vue.use(VueComponentStyle);
 _nuxt.config.js_:
 ```javascript
 module.exports = {
-  // ...
   modules: [
     'vue-component-style/nuxt'
   ],
-  // ...
 }
 ```
 
 Note that You don't need to do anything else with your webpack config or whatever.
-
----
 
 ## Usage
 
@@ -84,18 +74,17 @@ export default {
       className('title', {
         color: this.color,
         fontWeight: 'bold',
-        padding: `${this.size * 2}px`,
-        borderRadius: `${this.size}px`
       }),
       className('content', {
+        color: 'gray',
         marginBottom: `${this.size}px`,
         '& > a': {
-          backgroundColor: this.color,
+          color: this.color,
           '&:visited': {
-            backgroundColor: 'transparent'
-          }
-        }
-      })
+            textDecoration: 'underline',
+          },
+        },
+      }),
     ];
   }
 }
@@ -106,40 +95,149 @@ export default {
 
 ## API Documentions
 
-### style: _Function_
-After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning an Array. This function will invoke inside of **VueComponentStyle** with **helper** util object.
+### Define Style
 
-Example:
+    Function this.style(helper)
+
+After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning an Array. This function will invoke inside of **VueComponentStyle** with [`helper`](#helper) util object.
+
+---
+
+### Use Defined Styles
+
+    Object this.$style
+
+After you defining **style** prop in your component, all your classes defined by [`className()`](#class-name)s are accessable with **$style** computed object inside your component instance.
+
+---
+
+### Notice When Styles Updated
+
+    VueEvent 'styleChange'
+
+**styleChange** event fires when your style changes and applied to DOM.
+
+
+---
+
+### Helper
+
+You can use **helper** object from first parameter of **style** function to defining your stylesheet. Helper object has these functions
+
+- [`className()`](#class-name)
+- [`mediaQuery()`](#media-query)
+- [`keyFrames()`](#key-frames)
+- [`custom()`](#custom)
+
+#### Class Name
+
+    Function helper.className(name, content)
+
+To define your scopped css class styles, use this helper function.
+
+| Param | Type | Default | Description |
+| - | - | - | - |
+| name | String | | Name of your class. All of your defined names will be accessable via $style Object later. |
+| content | Object | {} | Your sass-style class properties. You can also style nested. |
+
+##### Example
+
 ```javascript
-style(helper) {
-  const { className } = className;
+style({ className }) {
   return [
-    className(name, objectContent),
-    ...
-  ]
+    className('customClass', {
+      color: 'red',
+      fontWeight: 'bold',
+      borderRadius: `${this.size}px`,
+      '& > div': {
+        color: 'blue',
+      },
+    }),
+  ];
 }
 ```
 
-### helper: _Object_
-You can use **helper** object from first parameter of **style** function to defining your stylesheet.
+#### Media Query
 
-#### helper.className: _Function_ (name: _String_, content: _Object_)
-To define a class style, use this. Your defined name from first parameter will accessable from **$style**.
+    Function helper.mediaQuery(mediaFeature, content)
 
-#### helper.mediaQuery: _Function_ (mediaFeatures: _Object_, content: _Array_)
-To define custom stylesheet for specefic screen size, use this. Note that you can also use **className** function inside content Array to redefine class style.
+To define your customized style to different screen sizes, use this helper function. 
 
-**[cssProp]**: _String_
+| Param | Type | Default | Description |
+| - | - | - | - |
+| mediaFeature | Object | | Media features. Common keys on this object are 'minWidth' and 'maxWidth'. |
+| content | Array | [] | List of [`className()`](#class-name)s that you need to redefine. |
 
-Any CSS property. dash-cased of camelCased.
+##### Example
 
-**[cssValue]**: _String_
+```javascript
+style({ mediaQuery, className }) {
+  return [
+    className('responsiveClass', {
+      width: '50%',
+    }),
+    mediaQuery({ maxWidth: '320px' }, [
+      className('responsiveClass', {
+        width: '100%',
+      }),     
+    ]),
+  ];
+}
+```
 
-CSS prop value. with String type or anything convertable to String.
+#### Key Frames
 
-### $style: _Object_
-After you defining **style** prop in your component, all your [objectName]s are accessable with **$style** computed object inside your component instance. Value of **$style** object keys is calculated CSS class of your object.
+    Function helper.keyFrames(name, content)
 
-### styleChange: _Vue Event_
+To define your scopped keyframes animation with specefic name, use this helper function. 
 
-**styleChange** event fires when your style changes and applied to DOM.
+| Param | Type | Default | Description |
+| - | - | - | - |
+| name | String | | Keyframes name. |
+| content | Object | | Keyframes properties. If you don't pass this prop, calculated hash name of already generated keyframes will be returns. |
+
+##### Example
+
+```javascript
+style({ keyFrames, className }) {
+  return [
+    className('animatedThing', {
+      color: 'blue',
+      animationName: keyFrames('myAnimation'),
+      animationDuration: '2s',
+    }),
+    keyFrames('myAnimation', {
+      from: {
+        color: 'blue',
+      },
+      to: {
+        color: 'red',
+      },
+    ]),
+  ];
+}
+```
+
+#### Custom
+
+    Function helper.custom(rule, content)
+
+To define your custom css style sections, use this helper function. **Note that styles generated by this helper function are not scopped!**
+
+| Param | Type | Default | Description |
+| - | - | - | - |
+| rule | String | | Rule name. |
+| content | Object | | Style properties. |
+
+##### Example
+
+```javascript
+style({ custom }) {
+  return [
+    custom('@font-face', {
+      fontFamily: 'globalFont',
+      src: 'url(global_font.woff)',
+    }),
+  ];
+}
+```
