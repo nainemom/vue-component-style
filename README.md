@@ -72,31 +72,31 @@ export default {
   props: {
     size: {
       type: Number,
-      default: 8,
+      default: 8
     },
     color: {
       type: String,
-      default: 'red',
+      default: 'red'
     }
   },
-  style() {
-    return {
-      title: {
+  style({ className }) {
+    return [
+      className('title', {
         color: this.color,
         fontWeight: 'bold',
         padding: `${this.size * 2}px`,
-        borderRadius: `${this.size}px`,
-      },
-      content: {
+        borderRadius: `${this.size}px`
+      }),
+      className('content', {
         marginBottom: `${this.size}px`,
         '& > a': {
           backgroundColor: this.color,
           '&:visited': {
-            backgroundColor: 'transparent',
+            backgroundColor: 'transparent'
           }
         }
-      }
-    }
+      })
+    ];
   }
 }
 </script>
@@ -107,21 +107,27 @@ export default {
 ## API Documentions
 
 ### style: _Function_
-After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning plain object:
+After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning an Array. This function will invoke inside of **VueComponentStyle** with **helper** util object.
 
+Example:
 ```javascript
-style() {
-  return {
-    [objectName]: {
-      [cssProp]: [cssValue]
-    },
+style(helper) {
+  const { className } = className;
+  return [
+    className(name, objectContent),
     ...
-  }
+  ]
 }
 ```
-**[objectName]**: _String_
 
-Name of your object.
+### helper: _Object_
+You can use **helper** object from first parameter of **style** function to defining your stylesheet.
+
+#### helper.className: _Function_ (name: _String_, content: _Object_)
+To define a class style, use this. Your defined name from first parameter will accessable from **$style**.
+
+#### helper.mediaQuery: _Function_ (mediaFeatures: _Object_, content: _Array_)
+To define custom stylesheet for specefic screen size, use this. Note that you can also use **className** function inside content Array to redefine class style.
 
 **[cssProp]**: _String_
 
