@@ -30,7 +30,7 @@ export const Helper = (id) => {
   const maps = {};
   return {
     maps,
-    className(name, content = null) {
+    className(name, content = {}) {
       const generatedName = generateName(id, name);
       const generatedContent = objectToCss(`.${generatedName}`, content);
       maps[name] = generatedName;
@@ -46,7 +46,7 @@ export const Helper = (id) => {
       })();
       return `@media screen and (${mediaFeatures}){${content.join(' ')}}`;
     },
-    keyFrames(name, content = null) {
+    keyFrames(name, content) {
       const generatedName = generateName(id, name);
       maps[name] = generateName;
       if (!content) {
@@ -63,8 +63,8 @@ export const Helper = (id) => {
       })();
       return `@keyframes ${generatedName} { ${ret} }`;
     },
-    custom(title, content) {
-      return objectToCss(dashCase(title), content);
+    custom(rule, content) {
+      return objectToCss(dashCase(rule), content);
     },
   };
 };
