@@ -16,8 +16,6 @@ A `Vue` mixin to add `style` section in components with `Javascript` syntax.
 
 ```bash
 npm i vue-component-style
-# or with yarn
-yarn add vue-component-style
 ```
 
 ## Setup
@@ -99,7 +97,7 @@ export default {
 
     Function this.style(helper)
 
-After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning an Array. This function will invoke inside of **VueComponentStyle** with [`helper`](#helper) util object.
+After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning an Array. This function will invoke automatically with [`helper`](#helper) util object.
 
 ### 2 - Use Defined Styles
 
