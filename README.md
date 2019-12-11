@@ -97,13 +97,13 @@ export default {
 
     Function this.style(helper)
 
-After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning an Array. This function will invoke automatically with [`helper`](#helper) util object.
+After activating **VueComponentStyle**, all components can have their js **style** section. Just like **data** section, you have to pass normal function that returning an Array. This function will invoke automatically with [`helper`](#helper) util object as first argument.
 
 ### 2 - Use Defined Styles
 
     Object this.$style
 
-After you defining **style** prop in your component, all your classes defined by [`className()`](#class-name)s are accessable with **$style** computed object inside your component instance.
+After you defining **style** prop in your component, all your classes defined by [`style()`](#1-define-style)s are accessable with **$style** computed object inside your component instance.
 
 ### 3 - Notice When Styles Updated
 
@@ -116,7 +116,7 @@ After you defining **style** prop in your component, all your classes defined by
 
 ### Helper
 
-You can use **helper** object from first parameter of **style** function to defining your stylesheet. Helper object has these functions
+You can use [`helper()`](#helper) object from first parameter of [`style()`](#1-define-style) function to defining your stylesheet. Helper object has these functions
 
 - [`className()`](#class-name)
 - [`mediaQuery()`](#media-query)
