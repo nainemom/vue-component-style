@@ -16,7 +16,7 @@
     "url": "git+https://github.com/nainemom/vue-component-style.git"
   },
   "author": "Amir Momenian <nainemom@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/nainemom/vue-component-style/issues"
   },
