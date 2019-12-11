@@ -1,4 +1,7 @@
 # Vue Component Style
+![npm](https://img.shields.io/npm/dm/vue-component-style)
+![npm](https://img.shields.io/npm/v/vue-component-style)
+![NPM](https://img.shields.io/npm/l/vue-component-style)
 
 A `Vue` mixin to add `style` section to components.
 
