@@ -7,9 +7,6 @@ export default {
   created() {
     this.$calcStyle();
   },
-  beforeUpdate() {
-    this.$calcStyle();
-  },
   methods: {
     $calcStyle() {
       const propValue = this.$options.style;
