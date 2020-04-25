@@ -1,6 +1,6 @@
 {
   "name": "vue-component-style",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Vue mixin to add style section to components.",
   "main": "dist/vue-component-style.cjs.js",
   "module": "dist/vue-component-style.esm.js",
