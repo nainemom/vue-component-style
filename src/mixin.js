@@ -1,5 +1,5 @@
 import {
-  typeOf, makeError, hashCode,
+  typeOf, makeError,
 } from './utils';
 import { injectStylesheet, deleteStylesheet, Helper } from './style';
 
@@ -20,7 +20,7 @@ export default {
         }
 
         if (typeOf(propValue) === 'Function') {
-          const styleId = hashCode(propValue.toString(), this.$data, JSON.stringify(this.$props));
+          const styleId = `${Math.floor(99999 * Math.random())}${Date.now()}`.padStart(18, 0);
           const helper = Helper(styleId);
           const value = propValue.call(this, helper);
           if (typeOf(value) !== 'Array') {
