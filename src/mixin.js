@@ -4,6 +4,7 @@ import {
 import { injectStylesheet, deleteStylesheet, Helper } from './style';
 
 export default {
+  emits: ['styleChange'],
   created() {
     this.$calcStyle();
   },
