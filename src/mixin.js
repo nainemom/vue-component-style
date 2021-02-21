@@ -4,6 +4,7 @@ import {
 import { injectStylesheet, deleteStylesheet, Helper } from './style';
 
 export default {
+  emits: ['styleChange'],
   created() {
     this.$calcStyle();
   },
@@ -31,7 +32,6 @@ export default {
           injectStylesheet(styleId, css, documentObject, ssrAppObject);
           this.$style = helper.maps;
           this.$lastStyleId = styleId;
-          this.$forceUpdate();
           this.$nextTick(() => { // wait until component-style new class-names applied to component
             setTimeout(() => { // wait until component-style updates global style tag
               this.$emit('styleChange', this.$style);
