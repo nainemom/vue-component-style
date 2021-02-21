@@ -32,14 +32,14 @@ import VueComponentStyle from 'vue-component-style';
 
 Vue.use(VueComponentStyle);
 
-// Vue 3.x
+// Vue 3.x (added support in >=1.1.0)
 import { createApp } from 'vue';
 import VueComponentStyle from 'vue-component-style';
 
 const theApp = createApp(/*...*/);
 theApp.use(VueComponentStyle);
 ```
-
+Note that You should use version >= 1.1.0 to use in Vue 3.
 ### Nuxt App
 
 _nuxt.config.js_:
