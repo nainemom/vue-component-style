@@ -26,10 +26,18 @@ npm i vue-component-style
 ### Vue App
 
 ```javascript
+// Vue 2.x
 import Vue from 'vue';
 import VueComponentStyle from 'vue-component-style';
 
 Vue.use(VueComponentStyle);
+
+// Vue 3.x
+import { createApp } from 'vue';
+import VueComponentStyle from 'vue-component-style';
+
+const theApp = createApp(/*...*/);
+theApp.use(VueComponentStyle);
 ```
 
 ### Nuxt App
@@ -232,8 +240,8 @@ To define your custom css style sections, use this helper function. **Note that 
 style({ custom }) {
   return [
     custom('@font-face', {
-      fontFamily: 'globalFont',
-      src: 'url(global_font.woff)',
+      fontFamily: 'MyFont',
+      src: 'url("/my-font.woff")',
     }),
   ];
 }
