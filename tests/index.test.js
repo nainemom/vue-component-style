@@ -23,7 +23,6 @@ function mountComponent(component, options = {}) {
   });
 }
 
-
 $test('Bundles exports', () => {
   const cjs = require('../dist/vue-component-style.cjs'); // eslint-disable-line global-require
   const umd = require('../dist/vue-component-style'); // eslint-disable-line global-require
@@ -36,12 +35,15 @@ $test('Bundles exports', () => {
 $test('Can apply static style', () => {
   const wrapper = mountComponent({
     template: '<div :class="$style.a"></div>',
-    style({ className }) {
-      return [
-        className('a', {
-          color: 'red',
-        }),
-      ];
+    computed: {
+      style() {
+        const { className } = this.$styleHelper;
+        return [
+          className('a', {
+            color: 'red',
+          }),
+        ];
+      },
     },
   });
   $expect(window.getComputedStyle(wrapper.element).color).toEqual('red');
@@ -51,12 +53,15 @@ $test('Can apply dynamic style', () => {
   const component = {
     props: ['color'],
     template: '<div :class="$style.scopedTest"></div>',
-    style({ className }) {
-      return [
-        className('scopedTest', {
-          backgroundColor: this.color,
-        }),
-      ];
+    computed: {
+      style() {
+        const { className } = this.$styleHelper;
+        return [
+          className('scopedTest', {
+            backgroundColor: this.color,
+          }),
+        ];
+      },
     },
   };
   const wrapper1 = mountComponent(component, {
@@ -74,32 +79,34 @@ $test('Can apply dynamic style', () => {
   $expect(window.getComputedStyle(wrapper2.element).backgroundColor).toEqual('red');
 });
 
+$test('Can handle runtime changes', () => {
+  const wrapper = mountComponent({
+    props: ['color'],
+    template: '<div :class="$style.a"></div>',
+    computed: {
+      style() {
+        const { className } = this.$styleHelper;
+        return [
+          className('a', {
+            backgroundColor: this.color,
+          }),
+        ];
+      },
+    },
+  }, {
+    propsData: {
+      color: 'blue',
+    },
+  });
 
-// $test('Can handle changes durring runtime', () => {
-//   const wrapper = mountComponent({
-//     props: ['color'],
-//     template: '<div :class="$style.a"></div>',
-//     style({ className }) {
-//       return [
-//         className('a', {
-//           backgroundColor: this.color,
-//         }),
-//       ];
-//     },
-//   }, {
-//     propsData: {
-//       color: 'blue',
-//     },
-//   });
+  wrapper.setProps({
+    color: 'cyan',
+  });
 
-//   wrapper.setProps({
-//     color: 'cyan',
-//   });
-
-//   return new Promise((resolve) => {
-//     wrapper.vm.$on('styleChange', () => {
-//       $expect(window.getComputedStyle(wrapper.element).backgroundColor).toEqual('cyan');
-//       resolve();
-//     });
-//   });
-// });
+  return new Promise((resolve) => {
+    wrapper.vm.$on('styleChange', () => {
+      $expect(window.getComputedStyle(wrapper.element).backgroundColor).toEqual('cyan');
+      resolve();
+    });
+  });
+});
