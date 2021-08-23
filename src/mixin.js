@@ -7,9 +7,22 @@ export default {
   created() {
     this.$calcStyle();
   },
+  computed: {
+    $styleId() {
+      return `${Math.floor(99999 * Math.random())}${Date.now()}`.padStart(18, 0);
+    },
+    $styleHelper() {
+      return Helper(this.$styleId);
+    },
+  },
+  watch: {
+    style() {
+      this.$calcStyle();
+    },
+  },
   methods: {
     $calcStyle() {
-      const propValue = this.$options.style;
+      const propValue = this.$options.computed.style;
       if (typeOf(propValue) !== 'Undefined') {
         const documentObject = typeof document !== 'undefined' ? document : undefined;
         const ssrAppObject = this._ssrAppObject;
@@ -20,17 +33,15 @@ export default {
         }
 
         if (typeOf(propValue) === 'Function') {
-          const styleId = `${Math.floor(99999 * Math.random())}${Date.now()}`.padStart(18, 0);
-          const helper = Helper(styleId);
-          const value = propValue.call(this, helper);
+          const value = this.style;
           if (typeOf(value) !== 'Array') {
             // style is passed and it's function, but return value is not object
             makeError('\'style\' function should returns Array!');
           }
           const css = value.join('');
-          injectStylesheet(styleId, css, documentObject, ssrAppObject);
-          this.$style = helper.maps;
-          this.$lastStyleId = styleId;
+          injectStylesheet(this.$styleId, css, documentObject, ssrAppObject);
+          this.$style = this.$styleHelper.maps;
+          this.$lastStyleId = this.$styleId;
           this.$forceUpdate();
           this.$nextTick(() => { // wait until component-style new class-names applied to component
             setTimeout(() => { // wait until component-style updates global style tag
